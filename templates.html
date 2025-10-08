@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo Switch 2 | KMITL Marketplace</title>
+    <link rel="stylesheet" href="Cart.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="cart-notification" class="cart-notification">
+        <i class="fas fa-check-circle"></i> เพิ่มสินค้าลงตะกร้าแล้ว!
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo-link" style="font-weight: bold; font-size: 1.2rem;">KMITL Marketplace</a>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for products...">
+            </div>
+            <a href="dashboard.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
+            <div class="header-icons">
+                <a href="Cart.html" class="icon-link cart-icon-wrapper">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cartCount" class="cart-count">0</span>
+                </a>
+                <a href="dashboard.html" class="icon-link"><i class="fas fa-user"></i></a>
+            </div>
+        </header>
+
+        <main>
+            <div class="product-container">
+              <div class="product-info">
+    <h2>Nintendo Switch 2</h2>
+    <div class="price">15,900฿</div>
+    <p class="description">เครื่องแท้รับประกันศูนย์ไทยใหม่แกะกล่อง</p>
+    
+    <div class="product-actions">
+        <button class="add-cart-btn" onclick="addToCart('Nintendo Switch 2', 15900, document.getElementById('mainImage'))">
+            <i class="fas fa-cart-plus"></i> เพิ่มลงตะกร้า
+        </button>
+        
+        <a href="chat.html" target="_blank" class="contact-seller-btn">
+            <i class="fas fa-comment-dots"></i> ติดต่อผู้ขาย
+        </a>
+    </div>
+    </div>
+                <div class="product-images">
+                    <img id="mainImage" src="https://i.ibb.co/X25Jj1S/nintendo-main.jpg" alt="Nintendo Switch 2">
+                    <div class="product-thumbs">
+                        <img src="https://i.ibb.co/X25Jj1S/nintendo-main.jpg" onclick="changeImage(this.src, this)" class="active">
+                        <img src="https://i.ibb.co/4pjR9L2/nintendo-side.jpg" onclick="changeImage(this.src, this)">
+                        <img src="https://i.ibb.co/FJ7jK5p/nintendo-box.jpg" onclick="changeImage(this.src, this)">
+                    </div>
+                </div>
+            </div>
+            <div class="details-section">
+                <h3>รายละเอียดสินค้า</h3>
+                <p>
+                    <strong>อุปกรณ์:</strong> ครบกล่อง<br>
+                    <strong>ประกันศูนย์:</strong> 30/09/2026<br>
+                    <strong>สภาพ:</strong> ใหม่<br>
+                    <strong>ประกันร้าน:</strong> ไม่มี<br>
+                    <strong>ประกันใจ:</strong> 30 วัน
+                </p>
+            </div>
+            <div class="related-section">
+                <h3>สิ่งที่คุณอาจสนใจ</h3>
+                <div class="related-items">
+                    <div class="related-item">
+                        <img src="https://i.ibb.co/Z8XzQhf/switch-oled.jpg" alt="Nintendo Switch OLED">
+                        <p>Nintendo Switch OLED<br><span>6,700฿</span></p>
+                    </div>
+                    <div class="related-item">
+                        <img src="https://i.ibb.co/MRz4F5X/ps5-slim.jpg" alt="PlayStation 5 Slim">
+                        <p>PlayStation 5 Slim<br><span>11,490฿</span></p>
+                    </div>
+                    <div class="related-item">
+                        <img src="https://i.ibb.co/fM0GLS6/switch2-bundle.jpg" alt="Nintendo Switch 2 Bundle">
+                        <p>Nintendo Switch 2 + Mario Kart™<br><span>17,490฿</span></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        // ฟังก์ชัน changeImage, getCart, saveCart, updateCartCount เหมือนเดิม
+        function changeImage(src, clickedThumb) {
+            document.getElementById("mainImage").src = src;
+            const thumbs = document.querySelectorAll('.product-thumbs img');
+            thumbs.forEach(thumb => thumb.classList.remove('active'));
+            clickedThumb.classList.add('active');
+        }
+
+        function getCart() {
+            return JSON.parse(localStorage.getItem("cart")) || [];
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const cart = getCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCountEl = document.getElementById("cartCount");
+            cartCountEl.innerText = totalItems;
+            cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+
+        // [เพิ่ม] ฟังก์ชันสำหรับแสดงการแจ้งเตือน
+        function showCartNotification() {
+            const notification = document.getElementById('cart-notification');
+            // เพิ่ม class 'show' เพื่อให้ CSS แสดงผล
+            notification.classList.add('show');
+            
+            // ตั้งเวลา 2 วินาที แล้วเอา class 'show' ออกเพื่อให้มันหายไป
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // [แก้ไข] ฟังก์ชัน addToCart
+        function addToCart(name, price) {
+            const cart = getCart();
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            saveCart(cart);
+            // alert("✅ เพิ่มสินค้าลงตะกร้าแล้ว!"); // <-- ลบ alert เดิมออก
+            showCartNotification(); // <-- เรียกใช้ฟังก์ชันแจ้งเตือนใหม่แทน
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
+</body>
+</html>
