@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMITL Student Secondhand Marketplace</title>
+    <link rel="stylesheet" href="Cart.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo-link" style="font-weight: bold; font-size: 1.2rem;">KMITL Marketplace</a>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for products...">
+            </div>
+            <a href="dashboard.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
+            <div class="header-icons">
+                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="dashboard.html" class="icon-link"><i class="fas fa-user"></i></a>
+            </div>
+        </header>
+
+  <main>
+    <h2>ตะกร้าสินค้าของคุณ</h2>
+    <div id="cartList"></div>
+    <div class="summary">
+      <p>ยอดรวมสินค้า: <span id="subtotal">0฿</span></p>
+      <p>ค่าจัดส่ง: <span id="shipping">20฿</span></p>
+      <h3>ยอดรวมทั้งหมด: <span id="total">0฿</span></h3>
+      <button class="checkout" onclick="checkout()">สั่งซื้อสินค้า ➜</button>
+    </div>
+  </main>
+
+  <script>
+    function getCart() {
+      return JSON.parse(localStorage.getItem("cart")) || [];
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function renderCart() {
+      const cart = getCart();
+      const cartList = document.getElementById("cartList");
+      const subtotalEl = document.getElementById("subtotal");
+      const totalEl = document.getElementById("total");
+      const shipping = 20;
+
+      cartList.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartList.innerHTML = "<p>ตะกร้าของคุณว่างเปล่า</p>";
+        subtotalEl.textContent = "0฿";
+        totalEl.textContent = "0฿";
+        return;
+      }
+
+      let subtotal = 0;
+
+      cart.forEach((item, index) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "cart-item";
+
+        subtotal += item.price * item.quantity;
+
+        itemDiv.innerHTML = `
+          <div class="item-info">
+            <strong>${item.name}</strong><br>
+            ราคา: ${item.price.toLocaleString()}฿
+          </div>
+          <div class="item-controls">
+            <button onclick="changeQty(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button onclick="changeQty(${index}, 1)">+</button>
+            <button onclick="removeItem(${index})">🗑️</button>
+          </div>
+        `;
+
+        cartList.appendChild(itemDiv);
+      });
+
+      subtotalEl.textContent = subtotal.toLocaleString() + "฿";
+      totalEl.textContent = (subtotal + shipping).toLocaleString() + "฿";
+    }
+
+    function changeQty(index, delta) {
+      const cart = getCart();
+      if (!cart[index]) return;
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) cart.splice(index, 1);
+      saveCart(cart);
+    }
+
+    function removeItem(index) {
+      const cart = getCart();
+      cart.splice(index, 1);
+      saveCart(cart);
+    }
+
+    function checkout() {
+      alert("สั่งซื้อสินค้าเรียบร้อย! ✅");
+      localStorage.removeItem("cart");
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>
