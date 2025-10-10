@@ -79,5 +79,40 @@
             </div>
         </main>
     </div>
+<script>
+    // เปลี่ยนชื่อ form จาก productForm เป็น addProductForm เพื่อความชัดเจน
+    const addProductForm = document.querySelector('.product-form');
+
+    addProductForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        // ใช้ FormData ซึ่งเหมาะกับการส่งไฟล์
+        const formData = new FormData(addProductForm);
+        
+        // --- ไม่ต้องแปลงเป็น JSON แล้ว ---
+        // const productData = { ... };
+
+        try {
+            // ส่ง formData ไปตรงๆ เลย
+            const response = await fetch('http://localhost:5000/api/products', {
+                method: 'POST',
+                // ไม่ต้องใส่ 'Content-Type' header, browser จะจัดการให้เอง
+                body: formData, 
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('บันทึกสินค้าสำเร็จแล้ว!');
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('ไม่สามารถเชื่อมต่อกับ Server ได้');
+        }
+    });
+</script>
 </body>
 </html>
