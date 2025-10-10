@@ -30,7 +30,7 @@
                 <a href="add-product.html" class="add-product-button"><i class="fas fa-plus"></i> เพิ่มสินค้าใหม่</a>
             </div>
             
-            <div class="my-products-list">
+            <div class="my-products-list" id="my-products-list">
                 <div class="my-product-item">
                     <img src="https://i.imgur.com/pP40f8X.png" alt="ตะเกียงน้ำมันวินเทจ" class="my-product-image">
                     <div class="my-product-details">
@@ -57,5 +57,66 @@
                  </div>
         </main>
     </div>
+        <script>
+        // ใช้ "DOMContentLoaded" เพื่อให้แน่ใจว่า HTML ทั้งหมดโหลดเสร็จก่อนที่ script จะทำงาน
+        document.addEventListener('DOMContentLoaded', async () => {
+            const productListContainer = document.getElementById('my-products-list');
+
+            try {
+                // 1. ยิง request ไปที่ Backend เพื่อขอข้อมูลสินค้าทั้งหมด
+                const response = await fetch('http://localhost:5000/api/products');
+                
+                if (!response.ok) {
+                    throw new Error('ไม่สามารถดึงข้อมูลสินค้าได้');
+                }
+                
+                const products = await response.json();
+
+                // 2. เคลียร์ข้อมูลสินค้าตัวอย่างทิ้ง
+                productListContainer.innerHTML = '';
+
+                if (products.length === 0) {
+                    productListContainer.innerHTML = '<p>คุณยังไม่มีสินค้าที่ลงขาย</p>';
+                    return;
+                }
+
+                // 3. วนลูปสร้าง HTML สำหรับสินค้าแต่ละชิ้น
+                products.forEach(product => {
+                    // สร้าง div หลักสำหรับสินค้า 1 ชิ้น
+                    const productItem = document.createElement('div');
+                    productItem.className = 'my-product-item';
+
+                    // กำหนดรูปภาพแรกของสินค้า (ถ้ามี) หรือใช้รูป placeholder
+                    const imageUrl = product.image_urls && product.image_urls.length > 0 
+                        ? product.image_urls[0] 
+                        : 'https://via.placeholder.com/150'; // รูปสำรอง
+
+                    // กำหนด class ของ status (available หรือ sold)
+                    const statusClass = product.status === 'available' ? 'available' : 'sold';
+                    const statusText = product.status === 'available' ? 'มีสินค้า' : 'ขายแล้ว';
+                    
+                    // สร้าง HTML ทั้งหมดสำหรับสินค้าชิ้นนั้นๆ
+                    productItem.innerHTML = `
+                        <img src="${imageUrl}" alt="${product.name}" class="my-product-image">
+                        <div class="my-product-details">
+                            <h3>${product.name}</h3>
+                            <p class="price">${product.price} B</p>
+                            <span class="status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="my-product-actions">
+                            <a href="add-product.html?id=${product.id}" class="edit-btn">แก้ไข</a>
+                        </div>
+                    `;
+
+                    // 4. นำ HTML ของสินค้าชิ้นใหม่ไปต่อท้ายใน container
+                    productListContainer.appendChild(productItem);
+                });
+
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                productListContainer.innerHTML = '<p>เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า</p>';
+            }
+        });
+    </script>
 </body>
 </html>

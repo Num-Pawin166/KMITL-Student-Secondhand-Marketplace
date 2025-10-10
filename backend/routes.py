@@ -58,3 +58,7 @@ def add_product():
         return jsonify({'message': 'Failed to create product', 'error': str(e)}), 500
 
 # ... (ฟังก์ชัน get_products ไม่ต้องแก้ไข) ...
+@api_bp.route('/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+    return jsonify([p.to_json() for p in products])
