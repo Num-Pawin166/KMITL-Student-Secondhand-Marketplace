@@ -57,7 +57,7 @@
                 </aside>
                 <div class="category-content">
                     <section class="products-section category-page-products">
-                        <div class="product-grid">
+                        <div class="product-grid" id="product-grid">
                             <a href="#" class="product-card">
                                 <img src="https://i.imgur.com/8Qp8E2j.png" alt="เสื้อยืดสกรีนลาย">
                                 <div class="product-card-info">
@@ -105,5 +105,60 @@
             </div>
         </main>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // --- ▼▼▼ [สำคัญ] แก้ไขแค่บรรทัดนี้ในแต่ละไฟล์ ▼▼▼ ---
+        const categoryName = 'clothing'; // << สำหรับไฟล์ category-appliances.html
+        // const categoryName = 'clothing'; // << สำหรับไฟล์ category-clothing.html
+        // const categoryName = 'health';   // << สำหรับไฟล์ category-health.html
+        // const categoryName = 'home';     // << สำหรับไฟล์ category-home.html
+        
+        const productGrid = document.getElementById('product-grid');
+
+        try {
+            // ยิง request ไปที่ API ใหม่ของเรา โดยระบุชื่อหมวดหมู่
+            const response = await fetch(`http://localhost:5000/api/products/category/${categoryName}`);
+            
+            if (!response.ok) {
+                throw new Error(`เกิดข้อผิดพลาด: ${response.status}`);
+            }
+            
+            const products = await response.json();
+
+            // ลบสินค้าตัวอย่างที่แสดงอยู่ทิ้ง
+            productGrid.innerHTML = '';
+
+            if (products.length === 0) {
+                productGrid.innerHTML = `<p style="text-align: center; width: 100%;">ไม่พบสินค้าในหมวดหมู่นี้</p>`;
+                return;
+            }
+
+            // วนลูปสร้างการ์ดสินค้าใหม่จากข้อมูลที่ได้มา
+            products.forEach(product => {
+                const productCard = document.createElement('a');
+                // ในอนาคตอาจจะลิงก์ไปหน้า product detail
+                productCard.href = '#'; 
+                productCard.className = 'product-card';
+
+                const imageUrl = product.image_urls && product.image_urls.length > 0
+                    ? `/${product.image_urls[0]}` // สร้าง URL เต็ม
+                    : 'https://via.placeholder.com/250'; // รูปสำรอง
+
+                productCard.innerHTML = `
+                    <img src="${imageUrl}" alt="${product.name}">
+                    <div class="product-card-info">
+                        <h3>${product.name}</h3>
+                        <p>${product.price} B</p>
+                    </div>
+                `;
+                productGrid.appendChild(productCard);
+            });
+
+        } catch (error) {
+            console.error(`Error fetching products for category '${categoryName}':`, error);
+            productGrid.innerHTML = '<p style="text-align: center; width: 100%;">เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า</p>';
+        }
+    });
+</script>
 </body>
 </html>

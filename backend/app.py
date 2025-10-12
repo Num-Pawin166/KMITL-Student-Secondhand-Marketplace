@@ -5,7 +5,7 @@ from config import Config
 from models import db
 from routes import api_bp # import Blueprint จาก routes
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.config.from_object(Config)
 
 # เปิดใช้งาน CORS

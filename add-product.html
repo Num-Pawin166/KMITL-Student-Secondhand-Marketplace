@@ -80,38 +80,72 @@
         </main>
     </div>
 <script>
-    // เปลี่ยนชื่อ form จาก productForm เป็น addProductForm เพื่อความชัดเจน
-    const addProductForm = document.querySelector('.product-form');
+    document.addEventListener('DOMContentLoaded', async () => {
+        const addProductForm = document.querySelector('.product-form');
+        const formTitle = document.querySelector('.form-container h1');
+        const saveButton = document.querySelector('.save-button');
 
-    addProductForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+        // ตรวจสอบ URL เพื่อหา Product ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
 
-        // ใช้ FormData ซึ่งเหมาะกับการส่งไฟล์
-        const formData = new FormData(addProductForm);
-        
-        // --- ไม่ต้องแปลงเป็น JSON แล้ว ---
-        // const productData = { ... };
+        let isEditMode = productId !== null;
 
-        try {
-            // ส่ง formData ไปตรงๆ เลย
-            const response = await fetch('http://localhost:5000/api/products', {
-                method: 'POST',
-                // ไม่ต้องใส่ 'Content-Type' header, browser จะจัดการให้เอง
-                body: formData, 
-            });
+        // --- โหมดแก้ไข ---
+        if (isEditMode) {
+            formTitle.textContent = 'แก้ไขสินค้า';
+            saveButton.textContent = 'อัปเดตข้อมูล';
 
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('บันทึกสินค้าสำเร็จแล้ว!');
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('เกิดข้อผิดพลาด: ' + result.message);
+            try {
+                // ดึงข้อมูลสินค้าเดิมมาแสดง
+                const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+                if (!response.ok) throw new Error('ไม่พบข้อมูลสินค้า');
+                
+                const product = await response.json();
+                
+                // นำข้อมูลที่ได้มาใส่ในฟอร์ม
+                document.querySelector('[name="product-name"]').value = product.name;
+                document.querySelector('[name="product-description"]').value = product.description;
+                document.querySelector('[name="product-price"]').value = product.price;
+                document.querySelector('[name="product-category"]').value = product.category;
+                document.querySelector(`[name="status"][value="${product.status}"]`).checked = true;
+                
+            } catch (error) {
+                console.error('Error fetching product data:', error);
+                alert('เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('ไม่สามารถเชื่อมต่อกับ Server ได้');
         }
+
+        // --- จัดการการ Submit ฟอร์ม (ทั้งโหมดเพิ่มและแก้ไข) ---
+        addProductForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(addProductForm);
+            const url = isEditMode 
+                ? `http://localhost:5000/api/products/${productId}` // URL สำหรับอัปเดต
+                : 'http://localhost:5000/api/products';         // URL สำหรับสร้างใหม่
+            
+            const method = isEditMode ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(isEditMode ? 'อัปเดตสินค้าสำเร็จ!' : 'บันทึกสินค้าสำเร็จแล้ว!');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('ไม่สามารถเชื่อมต่อกับ Server ได้');
+            }
+        });
     });
 </script>
 </body>
