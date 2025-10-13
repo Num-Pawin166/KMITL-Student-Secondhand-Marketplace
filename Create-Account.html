@@ -1,177 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Create Account — Figma Clone</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMITL Create Account </title>
+    <link rel="stylesheet" href="Create-Account.css">
+</head>
+<body>
+    <div class="background"></div>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h3>สมัครลงทะเบียนเข้าสู่ตลาดนัดมือสอง</h3>
+            <p>โดยใช้ Email Account ของมหาวิทยาลัย</p>
+            <form>
+                <label>EMAIL ADDRESS <span class="hint">(@kmitl.ac.th)</span></label>
+                <input type="email" placeholder="example@kmitl.ac.th" required>
 
-  <!-- Font Awesome for icons -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+                <label>PASSWORD</label>
+                <input type="password" placeholder="Enter your password" required>
 
-  <style>
-    :root{
-      --orange: #E75E36;
-      --red: #DB0808;
-      --red-dark: #B30606;
-      --input-bg: #F0F0F0;
-      --link-blue: #063AF5;
-      --container-width: 980px;
-      --container-height: 620px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{
-      height:100%;
-      margin:0;
-      font-family: "Poppins", sans-serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      background: #efefef;
-    }
-
-    /* Centering page */
-    .page {
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:30px;
-    }
-
-    /* Outer card that matches figma frame */
-    .card {
-      position: relative;
-      width: min(calc(100% - 40px), var(--container-width));
-      height: var(--container-height);
-      border-radius: 28px;
-      overflow: visible;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
-      display:flex;
-      align-items:stretch;
-      background: transparent;
-    }
-
-    /* Left orange panel */
-    .card .left {
-      position: relative;
-      width: 44%;
-      min-width: 340px;
-      background: var(--orange);
-      border-top-left-radius: 24px;
-      border-bottom-left-radius: 24px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding-left:30px;
-      padding-right:10px;
-      overflow: visible;
-    }
-
-    /* Decorative rounded white panel on right */
-    .card .right {
-      position: relative;
-      flex: 1;
-      background: #ffffff;
-      border-top-right-radius: 28px;
-      border-bottom-right-radius: 28px;
-      padding: 56px 56px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-    }
-
-    /* Position and style the illustration so it overlaps nicely */
-    .illustration {
-      position: absolute;
-      left: 32px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 320px;             /* tune to look like Figma */
-      height: auto;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    /* dark navy blob behind the illustration to mimic Figma shapes */
-    .left .blob {
-      position:absolute;
-      left:-40px;
-      top:calc(50% - 180px);
-      width: 460px;
-      height: 420px;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.0) 60%), #0a2a66;
-      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-      transform: rotate(-10deg);
-      z-index:1;
-      filter: blur(0px);
-      opacity:0.95;
-    }
-
-    /* light blue blob behind illustration */
-    .left .blob-light {
-      position:absolute;
-      left:60px;
-      top:40px;
-      width: 360px;
-      height: 300px;
-      background: #A7B9FF; /* pale blue similar to figma */
-      border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
-      z-index:1;
-      transform: translateY(40px);
-    }
-
-    /* Title */
-    .title {
-      text-align:center;
-      font-size:36px;
-      font-weight:800;
-      margin-bottom:18px;
-      color:#0b0b0b;
-      letter-spacing:0.4px;
-    }
-
-    /* Form group */
-    .form {
-      width:100%;
-      max-width:480px;
-      margin: 0 auto;
-    }
-
-    .input-row{
-      display:flex;
-      gap:12px;
-      margin-bottom:18px;
-      align-items:center;
-    }
-
-    .input-wrap {
-      position:relative;
-      width:100%;
-    }
-
-    .input-wrap input{
-      width:100%;
-      padding:16px 20px 16px 56px; /* leave space for icon */
-      border-radius: 16px;
-      border:none;
-      background: var(--input-bg);
-      font-size:16px;
-      outline:none;
-      color:#444;
-      box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
-    }
-
-    .icon-left{
-      position:absolute;
-      left:18px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:18px;
-      color:#111;
-      opacity:0.9;
-    }
-
-    /* Enlarged padlock /*
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
