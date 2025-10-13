@@ -15,14 +15,53 @@
             <p>โดยใช้ Email Account ของมหาวิทยาลัย</p>
             <form>
                 <label>EMAIL ADDRESS <span class="hint">(@kmitl.ac.th)</span></label>
-                <input type="email" placeholder="example@kmitl.ac.th" required>
+                <input type="email" id="email" placeholder="example@kmitl.ac.th" required>
 
                 <label>PASSWORD</label>
-                <input type="password" placeholder="Enter your password" required>
+                <input type="password" id="password" placeholder="Enter your password" required>
 
                 <button type="submit" class="login-btn">Create Account</button>
             </form>
         </div>
     </div>
+<script>
+document.getElementById('createAccountForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.querySelector('#email').value.trim();
+    const password = document.querySelector('#password').value.trim();
+
+    // ตรวจสอบ email ต้องลงท้าย @kmitl.ac.th
+    if (!email.endsWith('@kmitl.ac.th')) {
+        alert('กรุณาใช้ Email ของมหาวิทยาลัย (@kmitl.ac.th)');
+        return;
+    }
+
+    // สร้าง username อัตโนมัติจาก email ก่อน @
+    const username = email.split('@')[0];
+
+    try {
+        const res = await fetch('http://localhost:5000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert('สมัครสมาชิกสำเร็จ!');
+            // เปลี่ยนลิงก์ไปหน้า User-Login.html
+            window.location.href = 'User-Login.html';
+        } else {
+            alert(data.message || 'เกิดข้อผิดพลาด');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+    }
+});
+
+</script>
 </body>
 </html>

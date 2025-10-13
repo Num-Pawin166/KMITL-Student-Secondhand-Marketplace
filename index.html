@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KMITL Student Secondhand Marketplace</title>
+    
+    <!-- ▼▼▼ 1. เพิ่มสคริปต์ยาม (Auth Guard) ไว้บนสุดเพื่อตรวจสอบการล็อกอินก่อนโหลดหน้า ▼▼▼ -->
+    <script src="auth.js"></script>
+    
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,10 +22,11 @@
             <div class="search-bar">
                 <input type="text" placeholder="Search for products...">
             </div>
-            <a href="dashboard.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
-            <div class="header-icons">
-                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
-                <a href="dashboard.html" class="icon-link"><i class="fas fa-user"></i></a>
+            <a href="add-product.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
+            
+            <!-- ▼▼▼ 2. แก้ไขส่วน Header ให้มี ID เพื่อให้ JavaScript อัปเดตได้ ▼▼▼ -->
+            <div class="header-icons" id="header-auth-section">
+                <!-- เนื้อหาจะถูกสร้างโดยสคริปต์ด้านล่าง -->
             </div>
         </header>
 
@@ -41,22 +46,10 @@
         <section class="category-section">
             <h2>หมวดหมู่</h2>
             <div class="category-grid">
-                <a href="category-clothing.html" class="category-card">
-                    <h3>เสื้อผ้า</h3>
-                    <img src="images/clothes.jpg" alt="เสื้อผ้า">
-                </a>
-                <a href="category-appliances.html" class="category-card">
-                    <h3>เครื่องใช้ไฟฟ้า</h3>
-                    <img src="images/appliances.jpg" alt="เครื่องใช้ไฟฟ้า">
-                </a>
-                <a href="category-home.html" class="category-card">
-                    <h3>บ้านและสวน</h3>
-                    <img src="images/home.jpg" alt="บ้านและสวน">
-                </a>
-                <a href="category-health.html" class="category-card">
-                    <h3>สุขภาพและความงาม</h3>
-                    <img src="images/health.jpg" alt="สุขภาพและความงาม">
-                </a>
+                <a href="category-clothing.html" class="category-card"><h3>เสื้อผ้า</h3><img src="images/clothes.jpg" alt="เสื้อผ้า"></a>
+                <a href="category-appliances.html" class="category-card"><h3>เครื่องใช้ไฟฟ้า</h3><img src="images/appliances.jpg" alt="เครื่องใช้ไฟฟ้า"></a>
+                <a href="category-home.html" class="category-card"><h3>บ้านและสวน</h3><img src="images/home.jpg" alt="บ้านและสวน"></a>
+                <a href="category-health.html" class="category-card"><h3>สุขภาพและความงาม</h3><img src="images/health.jpg" alt="สุขภาพและความงาม"></a>
             </div>
         </section>
     </div>
@@ -65,7 +58,8 @@
         <section class="products-section">
             <h2>สินค้าใหม่</h2>
             <div class="product-grid" id="new-products-grid">
-                </div>
+                <!-- สินค้าจะถูกเติมโดย JavaScript -->
+            </div>
             <div class="view-more-container">
                 <button class="view-more-btn button-style">เพิ่มเติม</button>
             </div>
@@ -74,59 +68,107 @@
         <section class="products-section">
             <h2>อื่นๆ</h2>
             <div class="product-grid">
-                </div>
+                <!-- ส่วนนี้ยังคงแสดงสินค้าตัวอย่างไว้ก่อน -->
+            </div>
             <div class="view-more-container">
                 <button class="view-more-btn button-style">เพิ่มเติม</button>
             </div>
         </section>
     </div>
+    
+    <!-- ▼▼▼ 3. อัปเดต Script ทั้งหมดให้ทำงานร่วมกัน ▼▼▼ -->
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const newProductsGrid = document.getElementById('new-products-grid');
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- ฟังก์ชันสำหรับอัปเดต Header ตามสถานะการล็อกอิน ---
+            const updateHeader = async () => {
+                const headerAuthSection = document.getElementById('header-auth-section');
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/api/check-auth', {
+                        method: 'GET',
+                        credentials: 'include'
+                    });
 
-            try {
-                // ดึงสินค้าทั้งหมด (ซึ่งตอนนี้เรียงตามวันที่ล่าสุดแล้ว)
-                const response = await fetch('http://localhost:5000/api/products');
-                if (!response.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
-                
-                const allProducts = await response.json();
+                    if (response.ok) {
+                        const data = await response.json();
+                        // ถ้าล็อกอินแล้ว: แสดงชื่อผู้ใช้และปุ่มออกจากระบบ
+                        headerAuthSection.innerHTML = `
+                            <span class="welcome-user">ยินดีต้อนรับ, ${data.user.username}</span>
+                            <a href="#" class="icon-link" id="logout-btn" title="ออกจากระบบ"><i class="fas fa-sign-out-alt"></i></a>
+                            <a href="#" class="icon-link" title="ตะกร้าสินค้า"><i class="fas fa-shopping-cart"></i></a>
+                            <a href="dashboard.html" class="icon-link" title="แดชบอร์ด"><i class="fas fa-user"></i></a>
+                        `;
 
-                // ลบสินค้าตัวอย่างทิ้ง
-                newProductsGrid.innerHTML = '';
+                        // เพิ่ม Event Listener ให้ปุ่ม Logout
+                        document.getElementById('logout-btn').addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            await fetch('http://127.0.0.1:5000/api/logout', {
+                                method: 'POST',
+                                credentials: 'include'
+                            });
+                            alert('ออกจากระบบสำเร็จ');
+                            window.location.href = 'User-Login.html';
+                        });
 
-                // แสดงสินค้าแค่ 8 ชิ้นล่าสุด
-                const latestProducts = allProducts.slice(0, 8);
-
-                if (latestProducts.length === 0) {
-                    newProductsGrid.innerHTML = '<p>ยังไม่มีสินค้าใหม่ในระบบ</p>';
-                    return;
-                }
-
-                // วนลูปสร้างการ์ดสินค้า
-                latestProducts.forEach(product => {
-                    const productCard = document.createElement('a');
-                    productCard.href = '#'; // ในอนาคตอาจจะลิงก์ไปหน้า product detail
-                    productCard.className = 'product-card';
-
-                    const imageUrl = product.image_urls && product.image_urls.length > 0
-                        ? `/${product.image_urls[0]}`
-                        : 'https://via.placeholder.com/250';
-
-                    productCard.innerHTML = `
-                        <img src="${imageUrl}" alt="${product.name}">
-                        <div class="product-card-info">
-                            <h3>${product.name}</h3>
-                            <p>${product.price} B</p>
-                        </div>
+                    } else {
+                        // ถ้ายังไม่ล็อกอิน: แสดงปุ่มเข้าสู่ระบบ
+                        headerAuthSection.innerHTML = `
+                             <a href="User-Login.html" class="post-item-btn">เข้าสู่ระบบ / สมัครสมาชิก</a>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Failed to update header:', error);
+                    // ถ้าเกิดข้อผิดพลาด ให้แสดงปุ่มเข้าสู่ระบบไว้ก่อน
+                    headerAuthSection.innerHTML = `
+                         <a href="User-Login.html" class="post-item-btn">เข้าสู่ระบบ / สมัครสมาชิก</a>
                     `;
-                    newProductsGrid.appendChild(productCard);
-                });
+                }
+            };
 
-            } catch (error) {
-                console.error('Error fetching new products:', error);
-                newProductsGrid.innerHTML = '<p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
-            }
+            // --- ฟังก์ชันสำหรับดึงข้อมูลสินค้าใหม่ (โค้ดเดิม) ---
+            const fetchNewProducts = async () => {
+                const newProductsGrid = document.getElementById('new-products-grid');
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/api/products');
+                    if (!response.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
+                    const allProducts = await response.json();
+                    newProductsGrid.innerHTML = '';
+                    const latestProducts = allProducts.slice(0, 8);
+
+                    if (latestProducts.length === 0) {
+                        newProductsGrid.innerHTML = '<p>ยังไม่มีสินค้าใหม่ในระบบ</p>';
+                        return;
+                    }
+
+                    latestProducts.forEach(product => {
+                        const productCard = document.createElement('a');
+                        productCard.href = '#';
+                        productCard.className = 'product-card';
+                        
+                        // แก้ไข URL ของรูปภาพให้ถูกต้องสำหรับตอนพัฒนา
+                        const imageUrl = product.image_urls && product.image_urls.length > 0
+                            ? `http://127.0.0.1:5000/${product.image_urls[0]}`
+                            : 'https://via.placeholder.com/250';
+
+                        productCard.innerHTML = `
+                            <img src="${imageUrl}" alt="${product.name}">
+                            <div class="product-card-info">
+                                <h3>${product.name}</h3>
+                                <p>${product.price} B</p>
+                            </div>`;
+                        newProductsGrid.appendChild(productCard);
+                    });
+                } catch (error) {
+                    console.error('Error fetching new products:', error);
+                    newProductsGrid.innerHTML = '<p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+                }
+            };
+
+            // เรียกใช้งานทั้งสองฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+            updateHeader();
+            fetchNewProducts();
         });
     </script>
 </body>
 </html>
+

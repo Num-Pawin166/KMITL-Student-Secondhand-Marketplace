@@ -109,43 +109,47 @@ input:focus {
 .login-btn {
     width: 100%;
     margin-top: 1.5rem;
-    background-color: #ff6600;
-    color: #fff;
-    border: none;
+    background-color: transparent;
+    color: #ff6600;
+    border: 2px solid #ff6600;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 25px;
     font-size: 1rem;
     cursor: pointer;
     font-weight: bold;
+    transition: 0.3s;
 }
 
 .login-btn:hover {
-    background-color: #e25500;
+    background-color: #ff6600;
+    color: #fff;
 }
 
-/* กล่องข้อความข้างขวา */
-.info-box {
-    width: 420px;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+/* ปุ่มสร้างบัญชี */
+.create-account {
+    text-align: center;
+    margin-top: 1rem;
 }
 
-.info-box h3 {
-    color: #e25500;
-    margin-top: 0;
+.create-account p {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
 }
 
-.info-box p {
-    color: #333;
-    line-height: 1.5;
-}
-
-.info-box a {
-    color: #0073e6;
+.create-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: transparent;
+    border: 2px solid #ff6600;
+    border-radius: 25px;
+    color: #ff6600;
+    font-weight: bold;
     text-decoration: none;
+    transition: 0.3s;
 }
-.info-box a:hover {
-    text-decoration: underline;
+
+.create-btn:hover {
+    background-color: #ff6600;
+    color: white;
 }
