@@ -1,10 +1,22 @@
 # backend/models.py
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin # <-- Import UserMixin
 
 db = SQLAlchemy()
 
-# ... (คลาส User ไม่ต้องแก้ไข) ...
+# --- ▼▼▼ เพิ่มคลาส User ใหม่ และแก้ไขให้รองรับ Flask-Login ▼▼▼ ---
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    # เราจะเก็บแค่ hash ของรหัสผ่าน ไม่เก็บรหัสผ่านตรงๆ
+    password_hash = db.Column(db.String(128), nullable=False)
+    
+    # ความสัมพันธ์: บอกว่า User 1 คน มี Product ได้หลายชิ้น
+    products = db.relationship('Product', backref='owner', lazy=True)
 
+
+# --- ▼▼▼ แก้ไขคลาส Product เพื่อเชื่อมกับ User ▼▼▼ ---
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -14,7 +26,9 @@ class Product(db.Model):
     status = db.Column(db.String(20), nullable=False, default='available')
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     
-    # เพิ่มความสัมพันธ์: บอกว่า Product 1 ชิ้น มี Images ได้หลายอัน
+    # เพิ่ม Foreign Key เพื่อชี้ไปที่เจ้าของสินค้า
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
     images = db.relationship('Image', backref='product', lazy=True, cascade="all, delete-orphan")
 
     def to_json(self):
@@ -26,15 +40,13 @@ class Product(db.Model):
             'category': self.category,
             'status': self.status,
             'created_at': self.created_at.isoformat(),
-            # เพิ่ม: ส่ง URL ของรูปภาพทั้งหมดไปด้วย
-            'image_urls': [image.url for image in self.images]
+            'image_urls': [image.url for image in self.images],
+            # เพิ่ม: ส่ง username ของเจ้าของสินค้าไปด้วย
+            'owner_username': self.owner.username 
         }
 
-# --- สร้างคลาส Image ใหม่ ---
+# --- คลาส Image (ไม่ต้องแก้ไข) ---
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # เราจะเก็บแค่ URL หรือ path ของไฟล์รูป
     url = db.Column(db.String(255), nullable=False)
-    
-    # สร้าง Foreign Key เพื่อเชื่อมกลับไปที่ตาราง Product
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)

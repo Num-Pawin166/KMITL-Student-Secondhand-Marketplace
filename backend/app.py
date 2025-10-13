@@ -1,25 +1,21 @@
-# backend/app.py
 from flask import Flask
+from extensions import db, bcrypt, login_manager
+from routes import api_bp
 from flask_cors import CORS
-from config import Config
-from models import db
-from routes import api_bp # import Blueprint จาก routes
+from flask_cors import CORS
 
-app = Flask(__name__, static_folder='static')
-app.config.from_object(Config)
 
-# เปิดใช้งาน CORS
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SECRET_KEY'] = 'secret-key'
 CORS(app)
-
-# เชื่อม SQLAlchemy กับ app
+# Initialize extensions
 db.init_app(app)
+bcrypt.init_app(app)
+login_manager.init_app(app)
 
-# ลงทะเบียน Blueprint
-app.register_blueprint(api_bp, url_prefix='/api')
+# Register Blueprint
+app.register_blueprint(api_bp)
 
-# สร้างตารางใน Database (ถ้ายังไม่มี)
-with app.app_context():
-    db.create_all()
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+if __name__ == "__main__":
+    app.run(debug=True)
