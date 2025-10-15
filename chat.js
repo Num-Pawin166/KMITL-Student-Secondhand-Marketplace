@@ -1,7 +1,7 @@
 // frontend/chat.js
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. เชื่อมต่อกับ Socket.IO server ที่ Backend
-    const socket = io.connect('/');
+    const socket = io.connect();
     
     // 2. ดึงข้อมูลจำเป็นจาก URL และ HTML
     const urlParams = new URLSearchParams(window.location.search);
