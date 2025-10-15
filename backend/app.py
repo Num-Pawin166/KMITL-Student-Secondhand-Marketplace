@@ -90,4 +90,4 @@ def serve_static_files(path):
 
 if __name__ == "__main__":
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    socketio.run(app, debug=True, port=5000)
+    socketio.run(app, debug=False, port=5000)
