@@ -91,4 +91,8 @@ def serve_static_files(path):
 
 if __name__ == "__main__":
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    socketio.run(app, debug=False, port=5000)
+
+    with app.app_context():
+        db.create_all()
+        print("✅ Database tables created or already exist.")
+    socketio.run(app, debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

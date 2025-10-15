@@ -161,3 +161,17 @@ def check_auth():
         return jsonify({'is_authenticated': True, 'user': {'username': current_user.username}})
     else:
         return jsonify({'is_authenticated': False}), 401
+    
+
+
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'backend', 'static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+...
+
+@api_bp.route('/init-db', methods=['GET'])
+def init_db():
+    db.create_all()
+    print("✅ Database initialized successfully.")
+    return jsonify({"message": "Database tables created!"})
