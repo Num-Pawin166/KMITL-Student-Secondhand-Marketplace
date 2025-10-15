@@ -7,13 +7,15 @@ from sqlalchemy.orm.exc import NoResultFound
 from flask_socketio import SocketIO, join_room, leave_room, send
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-# ▼▼▼ แก้ไขการ import ทั้งหมดที่นี่ ▼▼▼
-# ลบ 'backend.' ออก เพื่อให้ทำงานบน Render ได้ถูกต้อง
-from config import Config
-from extensions import db, bcrypt, login_manager
-from routes import api_bp
-from models import User
+
+
+from backend.config import Config
+from backend.extensions import db, bcrypt, login_manager
+from backend.routes import api_bp
+from backend.models import User
 from flask_cors import CORS
+
+
 
 # --- การตั้งค่า App (เหมือนเดิม) ---
 frontend_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
