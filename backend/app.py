@@ -7,7 +7,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from flask_socketio import SocketIO, join_room, leave_room, send
 
 from backend.extensions import db, bcrypt, login_manager
-from extensions import db, bcrypt, login_manager
 from routes import api_bp
 from models import User
 from flask_cors import CORS
