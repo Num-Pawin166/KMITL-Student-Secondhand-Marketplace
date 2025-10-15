@@ -153,3 +153,105 @@ input:focus {
     background-color: #ff6600;
     color: white;
 }
+
+/* กล่องข้อความข้างขวา */
+.info-box {
+    width: 420px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.info-box h3 {
+    color: #e25500;
+    margin-top: 0;
+}
+
+.info-box p {
+    color: #333;
+    line-height: 1.5;
+}
+
+.info-box a {
+    color: #0073e6;
+    text-decoration: none;
+}
+.info-box a:hover {
+    text-decoration: underline;
+}
+/* ... (โค้ดเดิมส่วนบน) ... */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Prompt", sans-serif;
+    height: 100%;
+}
+/* ... (โค้ดเดิม) ... */
+.login-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2.5rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    width: 380px; /* ปรับความกว้างเล็กน้อย */
+    text-align: center;
+}
+
+.login-card h3 {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.login-card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* ▼▼▼ เพิ่มโค้ดส่วนนี้เข้าไปในไฟล์ login.css ของคุณ ▼▼▼ */
+
+.google-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin: 1.5rem auto;
+    width: 90%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.google-login-btn:hover {
+    background-color: #f7f7f7;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.google-login-btn img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.policy-text {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 1.5rem;
+}
+
+.policy-text a {
+    color: #555;
+    text-decoration: none;
+}
+
+.policy-text a:hover {
+    text-decoration: underline;
+}
