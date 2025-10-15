@@ -6,6 +6,7 @@ from flask_login import login_user
 from sqlalchemy.orm.exc import NoResultFound
 from flask_socketio import SocketIO, join_room, leave_room, send
 
+from backend.config import Config
 from backend.extensions import db, bcrypt, login_manager
 from backend.routes import api_bp  
 from backend.models import User  
@@ -13,7 +14,7 @@ from flask_cors import CORS
 
 frontend_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 app = Flask(__name__, static_folder=frontend_folder)
-app.config.from_object('config.Config')
+app.config.from_object(Config)
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
