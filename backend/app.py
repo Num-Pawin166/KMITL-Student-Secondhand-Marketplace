@@ -1,4 +1,7 @@
 # backend/app.py
+from gevent import monkey
+monkey.patch_all()
+
 import os
 from flask import Flask, redirect, url_for, send_from_directory
 from flask_dance.contrib.google import make_google_blueprint, google
