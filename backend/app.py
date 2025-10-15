@@ -40,7 +40,7 @@ google_bp = make_google_blueprint(
     client_id=app.config.get("GOOGLE_OAUTH_CLIENT_ID"),
     client_secret=app.config.get("GOOGLE_OAUTH_CLIENT_SECRET"),
     scope=["openid", "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"],
-    redirect_to="post_login",
+    redirect_url="/post-google-login",
 )
 app.register_blueprint(google_bp, url_prefix="/login")
 
