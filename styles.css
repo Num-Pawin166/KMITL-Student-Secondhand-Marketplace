@@ -855,3 +855,25 @@ header {
     background-color: #6c757d;
     color: white;
 }
+
+
+/* styles.css */
+
+/* --- เพิ่มสไตล์สำหรับปุ่ม "เพิ่มลงตะกร้า" --- */
+.product-card .add-to-cart-btn {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Kanit', sans-serif;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.product-card .add-to-cart-btn:hover {
+    background-color: #e65c00;
+}

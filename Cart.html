@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KMITL Student Secondhand Marketplace</title>
+    <title>ตะกร้าสินค้าของฉัน - KMITL Marketplace</title>
+    
+    <!-- ไม่จำเป็นต้องใช้ Auth Guard เพราะตะกร้าอยู่บนเครื่องผู้ใช้ -->
+    <!-- <script src="auth.js"></script> -->
+
     <link rel="stylesheet" href="Cart.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,106 +15,143 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-
-    <div class="container">
+    <!-- (ส่วน Header และ Main เหมือนเดิม) -->
+     <div class="container">
         <header>
             <a href="index.html" class="logo-link" style="font-weight: bold; font-size: 1.2rem;">KMITL Marketplace</a>
             <div class="search-bar">
                 <input type="text" placeholder="Search for products...">
             </div>
-            <a href="dashboard.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
+            <a href="add-product.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
             <div class="header-icons">
-                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="Cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
                 <a href="dashboard.html" class="icon-link"><i class="fas fa-user"></i></a>
             </div>
         </header>
 
-  <main>
-    <h2>ตะกร้าสินค้าของคุณ</h2>
-    <div id="cartList"></div>
-    <div class="summary">
-      <p>ยอดรวมสินค้า: <span id="subtotal">0฿</span></p>
-      <p>ค่าจัดส่ง: <span id="shipping">20฿</span></p>
-      <h3>ยอดรวมทั้งหมด: <span id="total">0฿</span></h3>
-      <button class="checkout" onclick="checkout()">สั่งซื้อสินค้า ➜</button>
+        <main>
+            <h2><i class="fas fa-shopping-cart"></i> สินค้าในตะกร้าของคุณ</h2>
+            <div class="cart">
+                <div class="cart-items-list" id="cart-items-list">
+                    <!-- รายการสินค้าจะถูกเติมโดย JavaScript -->
+                </div>
+
+                <div class="summary">
+                    <h3>สรุปรายการ</h3>
+                    <div class="summary-item">
+                        <span>ยอดรวม (Subtotal)</span>
+                        <span id="subtotal">0 ฿</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>ค่าจัดส่ง (Shipping)</span>
+                        <span id="shipping">0 ฿</span>
+                    </div>
+                    <hr>
+                    <div class="summary-item total">
+                        <span>ยอดสุทธิ (Total)</span>
+                        <span id="total">0 ฿</span>
+                    </div>
+                    <button class="checkout-btn">ดำเนินการชำระเงิน</button>
+                </div>
+            </div>
+        </main>
     </div>
-  </main>
 
-  <script>
-    function getCart() {
-      return JSON.parse(localStorage.getItem("cart")) || [];
-    }
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cartListContainer = document.getElementById('cart-items-list');
+        const subtotalEl = document.getElementById('subtotal');
+        const shippingEl = document.getElementById('shipping');
+        const totalEl = document.getElementById('total');
+        const shippingCost = 50; // สมมติค่าส่ง
 
-    function saveCart(cart) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-      renderCart();
-    }
+        const cartManager = {
+            getCart: function() {
+                return JSON.parse(localStorage.getItem('shoppingCart')) || [];
+            },
+            saveCart: function(cart) {
+                localStorage.setItem('shoppingCart', JSON.stringify(cart));
+                renderCart(); // <-- เรียก render ใหม่ทุกครั้งที่บันทึก
+            },
+            removeItem: function(productId) {
+                let cart = this.getCart();
+                cart = cart.filter(item => item.id !== productId);
+                this.saveCart(cart);
+            },
+            updateQuantity: function(productId, change) {
+                let cart = this.getCart();
+                const item = cart.find(item => item.id === productId);
+                if (item) {
+                    item.quantity += change;
+                    if (item.quantity <= 0) {
+                        this.removeItem(productId);
+                    } else {
+                        this.saveCart(cart);
+                    }
+                }
+            }
+        };
 
-    function renderCart() {
-      const cart = getCart();
-      const cartList = document.getElementById("cartList");
-      const subtotalEl = document.getElementById("subtotal");
-      const totalEl = document.getElementById("total");
-      const shipping = 20;
+        function renderCart() {
+            const cart = cartManager.getCart();
+            cartListContainer.innerHTML = '';
+            let subtotal = 0;
 
-      cartList.innerHTML = "";
+            if (cart.length === 0) {
+                cartListContainer.innerHTML = '<p>ตะกร้าของคุณว่างเปล่า</p>';
+                subtotalEl.textContent = '0 ฿';
+                shippingEl.textContent = '0 ฿';
+                totalEl.textContent = '0 ฿';
+                return;
+            }
 
-      if (cart.length === 0) {
-        cartList.innerHTML = "<p>ตะกร้าของคุณว่างเปล่า</p>";
-        subtotalEl.textContent = "0฿";
-        totalEl.textContent = "0฿";
-        return;
-      }
+            cart.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                
+                subtotal += item.price * item.quantity;
 
-      let subtotal = 0;
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="item-info">
+                        <strong>${item.name}</strong><br>
+                        ราคา: ${item.price.toLocaleString()} ฿
+                    </div>
+                    <div class="item-controls">
+                        <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                        <button class="remove-btn" data-id="${item.id}">🗑️</button>
+                    </div>
+                `;
+                cartListContainer.appendChild(itemDiv);
+            });
 
-      cart.forEach((item, index) => {
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "cart-item";
+            // อัปเดตยอดรวม
+            subtotalEl.textContent = `${subtotal.toLocaleString()} ฿`;
+            shippingEl.textContent = `${shippingCost.toLocaleString()} ฿`;
+            totalEl.textContent = `${(subtotal + shippingCost).toLocaleString()} ฿`;
+        }
 
-        subtotal += item.price * item.quantity;
+        // --- เพิ่ม Event Listeners ให้กับปุ่มต่างๆ ในตะกร้า ---
+        cartListContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const productId = parseInt(target.dataset.id);
 
-        itemDiv.innerHTML = `
-          <div class="item-info">
-            <strong>${item.name}</strong><br>
-            ราคา: ${item.price.toLocaleString()}฿
-          </div>
-          <div class="item-controls">
-            <button onclick="changeQty(${index}, -1)">-</button>
-            <span>${item.quantity}</span>
-            <button onclick="changeQty(${index}, 1)">+</button>
-            <button onclick="removeItem(${index})">🗑️</button>
-          </div>
-        `;
+            if (target.classList.contains('remove-btn')) {
+                cartManager.removeItem(productId);
+            }
+            if (target.classList.contains('decrease-btn')) {
+                cartManager.updateQuantity(productId, -1);
+            }
+            if (target.classList.contains('increase-btn')) {
+                cartManager.updateQuantity(productId, 1);
+            }
+        });
 
-        cartList.appendChild(itemDiv);
-      });
-
-      subtotalEl.textContent = subtotal.toLocaleString() + "฿";
-      totalEl.textContent = (subtotal + shipping).toLocaleString() + "฿";
-    }
-
-    function changeQty(index, delta) {
-      const cart = getCart();
-      if (!cart[index]) return;
-      cart[index].quantity += delta;
-      if (cart[index].quantity <= 0) cart.splice(index, 1);
-      saveCart(cart);
-    }
-
-    function removeItem(index) {
-      const cart = getCart();
-      cart.splice(index, 1);
-      saveCart(cart);
-    }
-
-    function checkout() {
-      alert("สั่งซื้อสินค้าเรียบร้อย! ✅");
-      localStorage.removeItem("cart");
-      renderCart();
-    }
-
-    renderCart();
-  </script>
+        // --- เริ่มแสดงผลตะกร้าสินค้าครั้งแรก ---
+        renderCart();
+    });
+</script>
 </body>
 </html>

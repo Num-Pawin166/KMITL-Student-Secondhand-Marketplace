@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 from extensions import db, bcrypt
 from models import User, Product, Image
+
 # --- เพิ่มการตั้งค่าสำหรับ Upload ---
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -79,6 +80,19 @@ def get_products():
     products = Product.query.order_by(Product.created_at.desc()).all()
     return jsonify([p.to_json() for p in products])
 
+# --- ▼▼▼ เพิ่ม API ใหม่สำหรับดึงสินค้าของผู้ใช้ที่ล็อกอินอยู่ ▼▼▼ ---
+@api_bp.route('/my-products', methods=['GET'])
+@login_required # <-- ป้องกัน: ต้องล็อกอินก่อนเท่านั้น
+def get_my_products():
+    """ดึงข้อมูลสินค้าทั้งหมดที่เป็นของ user ที่กำลังล็อกอินอยู่"""
+    try:
+        # ค้นหาสินค้าทั้งหมดที่ owner_id ตรงกับ id ของ user ปัจจุบัน
+        user_products = Product.query.filter_by(owner_id=current_user.id).order_by(Product.created_at.desc()).all()
+        return jsonify([p.to_json() for p in user_products])
+    except Exception as e:
+        return jsonify({'message': 'Failed to fetch your products', 'error': str(e)}), 500
+# --- ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ ---
+
 @api_bp.route('/products/category/<string:category_name>', methods=['GET'])
 def get_products_by_category(category_name):
     try:
@@ -146,4 +160,3 @@ def check_auth():
         return jsonify({'is_authenticated': True, 'user': {'username': current_user.username}})
     else:
         return jsonify({'is_authenticated': False}), 401
-
