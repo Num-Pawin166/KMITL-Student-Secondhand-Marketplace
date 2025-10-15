@@ -3,8 +3,9 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 import os
-from extensions import db, bcrypt
-from models import User, Product, Image
+
+from backend.extensions import db, bcrypt
+from backend.models import User, Product, Image
 
 # --- เพิ่มการตั้งค่าสำหรับ Upload ---
 UPLOAD_FOLDER = 'static/uploads'

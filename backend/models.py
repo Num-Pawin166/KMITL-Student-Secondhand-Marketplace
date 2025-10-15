@@ -1,5 +1,5 @@
 # backend/models.py
-from extensions import db # <-- แก้ไข: import db จาก extensions
+from backend.extensions import db   # เปลี่ยนเป็น backend.extensions
 from flask_login import UserMixin
 
 # --- แก้ไขคลาส User ---
