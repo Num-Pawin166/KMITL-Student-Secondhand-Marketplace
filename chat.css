@@ -1,0 +1,184 @@
+/* frontend/chat.css */
+
+.chat-page-title {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.chat-layout {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    height: 75vh; /* ทำให้ Layout มีความสูงที่แน่นอน */
+    overflow: hidden;
+}
+
+/* --- Sidebar (รายชื่อแชท) --- */
+.chat-sidebar {
+    width: 300px;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-list-header {
+    padding: 1rem;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.chat-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.chat-list-item:hover {
+    background-color: #f9f9f9;
+}
+
+.chat-list-item.active {
+    background-color: #fff3e0;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.chat-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.chat-name {
+    font-weight: bold;
+    display: block;
+}
+
+.chat-preview {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-notification {
+    background-color: #ff3b30;
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+
+/* --- Main Chat Window (หน้าต่างแชทหลัก) --- */
+.chat-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-header h3 {
+    margin: 0;
+}
+
+.chat-header span {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    max-width: 70%;
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+}
+
+.message p {
+    margin: 0;
+}
+
+.message .timestamp {
+    font-size: 0.75rem;
+    color: #999;
+    display: block;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.message.sent {
+    background-color: #ff6600;
+    color: white;
+    align-self: flex-end; /* จัดชิดขวา */
+}
+
+.message.sent .timestamp {
+    color: #ffe0cc;
+}
+
+.message.received {
+    background-color: #e9e9eb;
+    color: #000;
+    align-self: flex-start; /* จัดชิดซ้าย */
+}
+
+.chat-input-form {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.chat-input-form input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    margin-right: 10px;
+}
+
+.send-button {
+    background-color: #ff6600;
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

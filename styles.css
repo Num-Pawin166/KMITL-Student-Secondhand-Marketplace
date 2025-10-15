@@ -877,3 +877,42 @@ header {
 .product-card .add-to-cart-btn:hover {
     background-color: #e65c00;
 }
+.product-card-info .contact-seller-btn {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-top: 5px;
+    display: block; /* ทำให้ปุ่มเต็มความกว้าง */
+    text-align: center;
+    transition: background-color 0.2s;
+}
+.product-card-info .contact-seller-btn:hover {
+    background-color: #0056b3;
+}
+/* เพิ่มใน styles.css */
+.my-product-actions {
+    display: flex;
+    flex-direction: column; /* จัดเรียงปุ่มแนวตั้ง */
+    gap: 8px; /* ระยะห่างระหว่างปุ่ม */
+}
+
+.my-product-actions .edit-btn,
+.my-product-actions .view-chat-btn {
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.my-product-actions .edit-btn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.my-product-actions .view-chat-btn {
+    background-color: #007bff;
+    color: white;
+}

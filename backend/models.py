@@ -36,7 +36,8 @@ class Product(db.Model):
             'status': self.status,
             'created_at': self.created_at.isoformat(),
             'image_urls': [image.url for image in self.images],
-            'owner_username': self.owner.username 
+            'owner_username': self.owner.username,
+            'owner_id': self.owner_id 
         }
 # --- คลาส Image (ไม่ต้องแก้ไข) ---
 class Image(db.Model):

@@ -1,24 +1,27 @@
 # backend/app.py
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, send_from_directory
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_login import login_user
 from sqlalchemy.orm.exc import NoResultFound
+from flask_socketio import SocketIO, join_room, leave_room, send
 
 from extensions import db, bcrypt, login_manager
-from routes import api_bp # <--- import blueprint
+from routes import api_bp
 from models import User
 from flask_cors import CORS
 
-app = Flask(__name__)
+frontend_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+app = Flask(__name__, static_folder=frontend_folder)
 app.config.from_object('config.Config')
-CORS(app, supports_credentials=True)
 
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+CORS(app, supports_credentials=True)
 db.init_app(app)
 bcrypt.init_app(app)
 login_manager.init_app(app)
 
-# (ส่วนของ Google Login ไม่ต้องแก้ไข)
 google_bp = make_google_blueprint(
     client_id=app.config.get("GOOGLE_OAUTH_CLIENT_ID"),
     client_secret=app.config.get("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -30,7 +33,7 @@ app.register_blueprint(google_bp, url_prefix="/login")
 @app.route("/post-google-login")
 def post_login():
     if not google.authorized:
-        return redirect("http://127.0.0.1:5500/User-Login.html")
+        return redirect(url_for('serve_index'))
 
     user_info = google.get("/oauth2/v2/userinfo").json()
     user_email = user_info["email"]
@@ -43,16 +46,48 @@ def post_login():
         db.session.commit()
 
     login_user(user)
-    return redirect("http://127.0.0.1:5500/index.html")
+    
+    # --- ▼▼▼ แก้ไขจุดนี้ ▼▼▼ ---
+    # เปลี่ยนจากการ hardcode URL มาใช้ฟังก์ชัน url_for เพื่อความถูกต้อง
+    return redirect(url_for('serve_index'))
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --- ▼▼▼ จุดที่แก้ไข ▼▼▼ ---
-# ลงทะเบียน API routes และกำหนด prefix ให้ทุก route ในนั้นขึ้นต้นด้วย /api
 app.register_blueprint(api_bp, url_prefix='/api')
+
+# --- ▼▼▼ เติมโค้ดที่หายไปในส่วนแชท ▼▼▼ ---
+@socketio.on('join')
+def on_join(data):
+    """เมื่อมีคนเข้ามาในห้องแชท"""
+    username = data.get('username', 'Anonymous')
+    room = data.get('room')
+    if room:
+        join_room(room)
+        print(f'{username} has entered the room: {room}')
+
+@socketio.on('send_message')
+def handle_send_message(data):
+    """เมื่อมีการส่งข้อความ"""
+    room = data.get('room')
+    if room:
+        socketio.emit('receive_message', data, to=room)
+        print(f"Message in room {room} from {data.get('username')}: {data.get('message')}")
+    
+# --- ส่วนของการเสิร์ฟหน้าเว็บ (เหมือนเดิม) ---
+@app.route('/')
+def serve_index():
+    return send_from_directory(frontend_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static_files(path):
+    if os.path.exists(os.path.join(frontend_folder, path)):
+        return send_from_directory(frontend_folder, path)
+    else:
+        # ถ้าหาไฟล์ไม่เจอ ให้ส่ง index.html กลับไปเสมอ
+        return send_from_directory(frontend_folder, 'index.html')
 
 if __name__ == "__main__":
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    app.run(debug=True, port=5000)
+    socketio.run(app, debug=True, port=5000)
