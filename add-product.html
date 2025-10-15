@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เพิ่ม/แก้ไขสินค้า - KMITL Marketplace</title>
+    
+    <script src="auth.js"></script> 
+    
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,17 +20,15 @@
             <div class="search-bar">
                 <input type="text" placeholder="Search for products...">
             </div>
-            <a href="dashboard.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
-            <div class="header-icons">
-                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
-                <a href="dashboard.html" class="icon-link"><i class="fas fa-user"></i></a>
-            </div>
+            <a href="add-product.html" class="post-item-btn"><i class="fas fa-plus-circle"></i> ลงขายสินค้า</a>
+            <div class="header-icons" id="header-auth-section">
+                 </div>
         </header>
 
         <main>
             <div class="form-container">
                 <h1><i class="fas fa-edit"></i> เพิ่ม/แก้ไขข้อมูลสินค้า</h1>
-                <form action="#" method="POST" class="product-form">
+                <form class="product-form">
                     
                     <div class="form-group">
                         <label for="product-name">ชื่อสินค้า</label>
@@ -79,13 +80,13 @@
             </div>
         </main>
     </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
         const addProductForm = document.querySelector('.product-form');
         const formTitle = document.querySelector('.form-container h1');
         const saveButton = document.querySelector('.save-button');
 
-        // ตรวจสอบ URL เพื่อหา Product ID
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
 
@@ -98,7 +99,7 @@
 
             try {
                 // ดึงข้อมูลสินค้าเดิมมาแสดง
-                const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+                const response = await fetch(`http://127.0.0.1:5000/api/products/${productId}`);
                 if (!response.ok) throw new Error('ไม่พบข้อมูลสินค้า');
                 
                 const product = await response.json();
@@ -122,8 +123,8 @@
 
             const formData = new FormData(addProductForm);
             const url = isEditMode 
-                ? `http://localhost:5000/api/products/${productId}` // URL สำหรับอัปเดต
-                : 'http://localhost:5000/api/products';         // URL สำหรับสร้างใหม่
+                ? `http://127.0.0.1:5000/api/products/${productId}` // URL สำหรับอัปเดต
+                : 'http://127.0.0.1:5000/api/products';       // URL สำหรับสร้างใหม่
             
             const method = isEditMode ? 'PUT' : 'POST';
 
@@ -131,14 +132,18 @@
                 const response = await fetch(url, {
                     method: method,
                     body: formData,
+                    
+                    // ▼▼▼ เพิ่มบรรทัดนี้เพื่อส่ง Cookie ยืนยันตัวตนไปด้วย ▼▼▼
+                    credentials: 'include' 
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
                     alert(isEditMode ? 'อัปเดตสินค้าสำเร็จ!' : 'บันทึกสินค้าสำเร็จแล้ว!');
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'dashboard.html'; // หรือจะไปหน้า index ก็ได้
                 } else {
+                    // ถ้า Server ตอบกลับมาเป็น Error (เช่น 401 Unauthorized)
                     alert('เกิดข้อผิดพลาด: ' + result.message);
                 }
             } catch (error) {

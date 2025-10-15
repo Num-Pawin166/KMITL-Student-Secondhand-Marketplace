@@ -1,18 +1,21 @@
 // frontend/auth.js
 
-// ฟังก์ชันนี้จะทำงานทันที
+// ฟังก์ชันนี้จะทำงานทันทีเพื่อตรวจสอบการล็อกอิน
 (async function checkAuthentication() {
+    // ไม่ต้องทำอะไรถ้าเราอยู่ที่หน้า Login อยู่แล้ว
+    if (window.location.pathname.endsWith('User-Login.html')) {
+        return;
+    }
+
     try {
-        // ถาม Backend ว่าเรา login หรือยัง
         const response = await fetch('http://127.0.0.1:5000/api/check-auth', {
             method: 'GET',
-            // credentials 'include' สำคัญมากเพื่อให้ browser ส่ง session cookie ไปด้วย
-            credentials: 'include' 
+            credentials: 'include'
         });
 
         if (response.status === 401) {
             // ถ้า Backend ตอบว่ายังไม่ login (401 Unauthorized)
-            // ให้เปลี่ยนหน้าไปที่ login.html ทันที
+            // ให้เปลี่ยนหน้าไปที่ User-Login.html ทันที
             window.location.href = 'User-Login.html';
         }
         // ถ้า status เป็น 200 (OK) ก็ไม่ต้องทำอะไร ปล่อยให้หน้าเว็บโหลดต่อไป
