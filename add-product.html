@@ -99,7 +99,7 @@
 
             try {
                 // ดึงข้อมูลสินค้าเดิมมาแสดง
-                const response = await fetch(`http://127.0.0.1:5000/api/products/${productId}`);
+                const response = await fetch(`/api/products/${productId}`);
                 if (!response.ok) throw new Error('ไม่พบข้อมูลสินค้า');
                 
                 const product = await response.json();
@@ -123,8 +123,8 @@
 
             const formData = new FormData(addProductForm);
             const url = isEditMode 
-                ? `http://127.0.0.1:5000/api/products/${productId}` // URL สำหรับอัปเดต
-                : 'http://127.0.0.1:5000/api/products';       // URL สำหรับสร้างใหม่
+                ? `/api/products/${productId}` // URL สำหรับอัปเดต
+                : '/api/products';       // URL สำหรับสร้างใหม่
             
             const method = isEditMode ? 'PUT' : 'POST';
 
