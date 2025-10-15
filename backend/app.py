@@ -2,18 +2,20 @@
 import os
 from flask import Flask, redirect, url_for, send_from_directory
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_login import login_user
+from flask_login import login_user, current_user # เพิ่ม current_user เข้ามา
 from sqlalchemy.orm.exc import NoResultFound
 from flask_socketio import SocketIO, join_room, leave_room, send
 
-from extensions import db, bcrypt, login_manager
-from routes import api_bp
-from models import User
+from backend.config import Config
+from backend.extensions import db, bcrypt, login_manager
+from backend.routes import api_bp
+from backend.models import User, ChatMessage
+from backend.config import Config
 from flask_cors import CORS
 
 frontend_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 app = Flask(__name__, static_folder=frontend_folder)
-app.config.from_object('config.Config')
+app.config.from_object(Config)
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -69,9 +71,22 @@ def on_join(data):
 
 @socketio.on('send_message')
 def handle_send_message(data):
-    """เมื่อมีการส่งข้อความ"""
+    """เมื่อมีการส่งข้อความ (เวอร์ชันที่บันทึกลง DB)"""
     room = data.get('room')
-    if room:
+    if room and current_user.is_authenticated:
+        try:
+            new_message = ChatMessage(
+                room=room,
+                sender_id=current_user.id,
+                message=data.get('message')
+            )
+            db.session.add(new_message)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error saving message to DB: {e}")
+
+        # ส่งข้อความไปให้ทุกคนในห้อง
         socketio.emit('receive_message', data, to=room)
         print(f"Message in room {room} from {data.get('username')}: {data.get('message')}")
     
@@ -87,6 +102,13 @@ def serve_static_files(path):
     else:
         # ถ้าหาไฟล์ไม่เจอ ให้ส่ง index.html กลับไปเสมอ
         return send_from_directory(frontend_folder, 'index.html')
+
+# DEBUG: Print the OAuth credentials to check if they are loaded correctly
+print("--- DEBUG OAUTH ---")
+print(f"CLIENT_ID: {app.config.get('GOOGLE_OAUTH_CLIENT_ID')}")
+print(f"CLIENT_SECRET: {app.config.get('GOOGLE_OAUTH_CLIENT_SECRET')}")
+print("-------------------")
+
 
 if __name__ == "__main__":
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'

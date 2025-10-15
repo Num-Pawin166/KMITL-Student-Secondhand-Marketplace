@@ -1,5 +1,5 @@
 # backend/models.py
-from extensions import db # <-- แก้ไข: import db จาก extensions
+from backend.extensions import db  # <-- แก้ไข: import db จาก extensions
 from flask_login import UserMixin
 
 # --- แก้ไขคลาส User ---
@@ -44,3 +44,28 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(255), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+
+
+class ChatMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+
+    # Relationships
+    product = db.relationship('Product')
+    sender = db.relationship('User', foreign_keys=[sender_id])
+    receiver = db.relationship('User', foreign_keys=[receiver_id])
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'product_id': self.product_id,
+            'sender_id': self.sender_id,
+            'receiver_id': self.receiver_id,
+            'message': self.message,
+            'timestamp': self.timestamp.isoformat(),
+            'sender_username': self.sender.username,
+        }

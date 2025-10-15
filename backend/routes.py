@@ -3,8 +3,9 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 import os
-from extensions import db, bcrypt
-from models import User, Product, Image
+from backend.extensions import db, bcrypt, login_manager
+from backend.models import User, ChatMessage
+from backend.models import User, Product, Image, ChatMessage
 
 # --- เพิ่มการตั้งค่าสำหรับ Upload ---
 UPLOAD_FOLDER = 'static/uploads'
@@ -160,3 +161,28 @@ def check_auth():
         return jsonify({'is_authenticated': True, 'user': {'username': current_user.username}})
     else:
         return jsonify({'is_authenticated': False}), 401
+
+
+@api_bp.route('/chat/history/<int:product_id>', methods=['GET'])
+@login_required
+def get_chat_history(product_id):
+    """
+    Fetches the chat history for a specific product between the current user
+    and the product owner.
+    """
+    product = Product.query.get_or_404(product_id)
+    owner_id = product.owner_id
+    current_user_id = current_user.id
+
+    # Fetch messages where the current user is either the sender or receiver
+    messages = ChatMessage.query.filter(
+        db.and_(
+            ChatMessage.product_id == product_id,
+            db.or_(
+                db.and_(ChatMessage.sender_id == current_user_id, ChatMessage.receiver_id == owner_id),
+                db.and_(ChatMessage.sender_id == owner_id, ChatMessage.receiver_id == current_user_id)
+            )
+        )
+    ).order_by(ChatMessage.timestamp.asc()).all()
+
+    return jsonify([message.to_json() for message in messages])
